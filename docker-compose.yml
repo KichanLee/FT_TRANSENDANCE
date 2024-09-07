@@ -18,7 +18,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./django/pingpong:/app
-      - ./start.sh:/app/start.sh
     ports:
       - "8000:8000"
     environment:

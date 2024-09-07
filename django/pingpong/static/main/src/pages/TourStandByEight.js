@@ -1,17 +1,12 @@
-import Component from '../core/Component.js';
+import TourStandBy from './TourStandBy.js';
 
-export default class TourStandBy extends Component {
-  constructor(props) {
-    super(props);
-    this.clickHandler = this.clickHandler.bind(this);
-    this.removeEvent();
-  }
+export default class TourStandByEight extends TourStandBy {
   setup() {
     super.setup();
     this.$state = {
       image: '../../main/public/doublepong.png',
-      optCount: 2,
-      optArray: Array(2).fill(''),
+      optCount: 8,
+      optArray: Array(8).fill(''),
     };
   }
 
@@ -64,7 +59,6 @@ export default class TourStandBy extends Component {
     };
     return texts[lang] || texts.en;
   }
-
   removeEvent() {
     if (this.$target && this.clickHandler) {
       this.$target.removeEventListener('click', this.clickHandler);
@@ -82,7 +76,6 @@ export default class TourStandBy extends Component {
       }
       if (target.matches('.match-btn')) {
         this.handleMatchButtonClick();
-        this.removeEvent();
         this.goMatchRoom();
         this.removeEvent();
       }
@@ -94,9 +87,11 @@ export default class TourStandBy extends Component {
   }
 
   handleMatchButtonClick() {
-    const optValues = {};
+    console.log('Match button clicked');
+
     let anonymousCount = 1;
-    for (let i = 1; i <= 2; i++) {
+    const optValues = {};
+    for (let i = 1; i <= 8; i++) {
       let value = this.$target
         .querySelector(`.match-opt[data-option="opt${i}"]`)
         .value.trim();
@@ -109,9 +104,8 @@ export default class TourStandBy extends Component {
       optValues[`opt${i}`] = value;
       console.log(`Option ${i}:`, value);
     }
-
+    //  console.log(sessionStorage.getItem)
     sessionStorage.setItem('players', JSON.stringify(optValues));
-    console.log('Values saved to sessionStorage');
   }
 
   goMatchRoom() {

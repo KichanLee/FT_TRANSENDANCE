@@ -1,17 +1,13 @@
 import Component from '../core/Component.js';
+import TourStandBy from './TourStandBy.js';
 
-export default class TourStandBy extends Component {
-  constructor(props) {
-    super(props);
-    this.clickHandler = this.clickHandler.bind(this);
-    this.removeEvent();
-  }
+export default class TourStandByFour extends TourStandBy {
   setup() {
     super.setup();
     this.$state = {
       image: '../../main/public/doublepong.png',
-      optCount: 2,
-      optArray: Array(2).fill(''),
+      optCount: 4,
+      optArray: Array(4).fill(''),
     };
   }
 
@@ -64,6 +60,12 @@ export default class TourStandBy extends Component {
     };
     return texts[lang] || texts.en;
   }
+  removeEvent() {
+    if (this.$target && this.clickHandler) {
+      this.$target.removeEventListener('click', this.clickHandler);
+      this.clickHandler = null;
+    }
+  }
 
   removeEvent() {
     if (this.$target && this.clickHandler) {
@@ -82,7 +84,6 @@ export default class TourStandBy extends Component {
       }
       if (target.matches('.match-btn')) {
         this.handleMatchButtonClick();
-        this.removeEvent();
         this.goMatchRoom();
         this.removeEvent();
       }
@@ -94,9 +95,12 @@ export default class TourStandBy extends Component {
   }
 
   handleMatchButtonClick() {
+    console.log('Match button clicked');
+
     const optValues = {};
     let anonymousCount = 1;
-    for (let i = 1; i <= 2; i++) {
+
+    for (let i = 1; i <= 4; i++) {
       let value = this.$target
         .querySelector(`.match-opt[data-option="opt${i}"]`)
         .value.trim();
@@ -109,17 +113,16 @@ export default class TourStandBy extends Component {
       optValues[`opt${i}`] = value;
       console.log(`Option ${i}:`, value);
     }
-
     sessionStorage.setItem('players', JSON.stringify(optValues));
     console.log('Values saved to sessionStorage');
   }
 
-  goMatchRoom() {
-    window.location.hash = '#waiting-room';
-  }
-
   goToHome() {
     window.location.hash = '#ingame-1';
+  }
+
+  goMatchRoom() {
+    window.location.hash = '#waiting-room';
   }
 
   destroy() {
