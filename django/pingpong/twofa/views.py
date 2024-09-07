@@ -1,19 +1,15 @@
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
-from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_protect
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
+from django.http import JsonResponse
+from django.core.cache import cache
 import pyotp
 import json
-from .models import TwoFactorAuth
-from django.core.cache import cache  # 이 줄을 추가합니다
-
 import qrcode
 import base64
 from io import BytesIO
+from .models import TwoFactorAuth
 
 def generate_qr_code(data):
     qr = qrcode.QRCode(version=1, box_size=10, border=5)
@@ -22,7 +18,7 @@ def generate_qr_code(data):
     img = qr.make_image(fill_color="black", back_color="white")
     
     buffered = BytesIO()
-    img.save(buffered, format="PNG")
+    img.save(buffered)
     img_str = base64.b64encode(buffered.getvalue()).decode()
     return f"data:image/png;base64,{img_str}"
 
@@ -55,7 +51,6 @@ def verify_2fa(request):
         totp = pyotp.TOTP(tfa.secret_key)
         
         if totp.verify(user_code):
-            # 2FA 인증 성공 시 임시 토큰 생성 및 캐시에 저장
             temp_token = pyotp.random_base32()
             cache.set(f'2fa_verified_{request.user.user_id}', temp_token, 300)  # 5분 동안 유효
             return JsonResponse({'success': True, 'temp_token': temp_token})
